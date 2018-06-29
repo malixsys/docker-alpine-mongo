@@ -1,12 +1,14 @@
-FROM alpine:edge
+FROM mhart/alpine-node:latest
 
-RUN \
-apk add --no-cache mongodb && \
-rm /usr/bin/mongoperf
+ADD run /
+ADD https://raw.githubusercontent.com/mvertes/dosu/0.1.0/dosu /sbin/
+
+RUN chmod +x /sbin/dosu && \
+  echo http://dl-4.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && \
+  apk add --no-cache mongodb make gcc g++ git python
 
 VOLUME /data/db
 EXPOSE 27017 28017
 
-COPY run.sh /root
-ENTRYPOINT [ "/root/run.sh" ]
+ENTRYPOINT [ "/run" ]
 CMD [ "mongod", "--bind_ip", "0.0.0.0" ]
